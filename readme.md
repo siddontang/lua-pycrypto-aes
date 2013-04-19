@@ -14,10 +14,10 @@ Now I have implemented aes mode ECB, CBC, CFB, OFB. I don't want to implement CT
 
 Very easy:
 
-make
+make  
 make install
 
-You may assign LUA_INCLUDE_DIR and LUA_LIB_DIR, default is for openresty with luajit. 
+You may assign LUA_INCLUDE_DIR and LUA_LIB_DIR when make, default is for openresty with luajit. 
 
 # Use
 
