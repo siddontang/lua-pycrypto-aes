@@ -30,8 +30,8 @@ static int create(lua_State* pState)
     int mode = MODE_ECB;
 
     int top = lua_gettop(pState);
-    int keyLen = 0;
-    int IVLen = 0;
+    size_t keyLen = 0;
+    size_t IVLen = 0;
     int segment_size = 0;
     const char* key = NULL; 
     const char* IV = NULL;   
@@ -81,7 +81,7 @@ static int create(lua_State* pState)
 
     if (IVLen != BLOCK_SIZE && mode != MODE_ECB && mode != MODE_CTR)
     {
-        luaL_error(pState, "IV must be %i bytes long", BLOCK_SIZE);
+        luaL_error(pState, "IV must be %d bytes long", BLOCK_SIZE);
         return 0;
     }
 
@@ -93,7 +93,7 @@ static int create(lua_State* pState)
         if (segment_size < 1 || segment_size > BLOCK_SIZE*8 
             || ((segment_size & 7) != 0)) 
         {
-            luaL_error(pState,  "segment_size must be multiple of 8 (bits) between 1 and %i", BLOCK_SIZE*8);
+            luaL_error(pState,  "segment_size must be multiple of 8 (bits) between 1 and %d", BLOCK_SIZE*8);
             return 0;
         }
     }
@@ -114,7 +114,7 @@ static int create(lua_State* pState)
 
     if(block_init(&(aes->st), key, keyLen) != 0)
     {
-        luaL_error(pState, "init aes object error");
+        luaL_error(pState, "init aes object error %s %d", key, keyLen);
         return 0;
     }
 
@@ -142,7 +142,7 @@ static int encrypt(lua_State* pState)
     {
         luaL_error(pState, 
                  "Input strings must be "
-                 "a multiple of %i in length",
+                 "a multiple of %d in length",
                  BLOCK_SIZE);
         return 0;
     }
@@ -150,7 +150,7 @@ static int encrypt(lua_State* pState)
         (len % (aes->segment_size/8) !=0)) {
         luaL_error(pState, 
                  "Input strings must be a multiple of "
-                 "the segment size %i in length",
+                 "the segment size %d in length",
                  aes->segment_size/8);
         return 0;
     }
@@ -250,7 +250,7 @@ static int decrypt(lua_State* pState)
     {
         luaL_error(pState, 
                  "Input strings must be "
-                 "a multiple of %i in length",
+                 "a multiple of %d in length",
                  BLOCK_SIZE);
         return 0;
     }
@@ -258,7 +258,7 @@ static int decrypt(lua_State* pState)
         (len % (aes->segment_size/8) !=0)) {
         luaL_error(pState, 
                  "aInput strings must be a multiple of "
-                 "the segment size %i in length",
+                 "the segment size %d in length",
                  aes->segment_size/8);
         return 0;
     }
