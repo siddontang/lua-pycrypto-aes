@@ -6,11 +6,11 @@ LUA_VERSION =   5.1
 
 ## Linux/BSD
 PREFIX  ?=          /usr/local/openresty
-LDFLAGS +=         -shared
+#LDFLAGS +=         -shared
 
 ## OSX (Macports)
 #PREFIX ?=          /opt/local
-#LDFLAGS +=         -bundle -undefined dynamic_lookup
+LDFLAGS +=         -bundle -undefined dynamic_lookup
 
 LUA_INCLUDE_DIR ?= $(PREFIX)/luajit/include/luajit-2.0
 LUA_LIB_DIR ?=     $(PREFIX)/lualib
