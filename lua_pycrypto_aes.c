@@ -7,6 +7,12 @@
 
 #include "aes.h"
 
+#ifdef _WIN32
+#define LUA_EXPORT __declspec(dllexport)
+#else
+#define LUA_EXPORT
+#endif
+
 #define MODE_ECB 1
 #define MODE_CBC 2
 #define MODE_CFB 3
@@ -52,7 +58,7 @@ static int create(lua_State* pState)
     if (top > 1)
     {
         //check mode
-        mode = luaL_checkint(pState, 2);
+        mode = luaL_checkinteger(pState, 2);
     }
 
     if (top > 2)
@@ -64,7 +70,7 @@ static int create(lua_State* pState)
     if (top > 3)
     {
         //check segment size
-        segment_size = luaL_checkint(pState, 4);
+        segment_size = luaL_checkinteger(pState, 4);
     }
 
     switch(mode)
@@ -346,20 +352,8 @@ void registerMode(lua_State* pState, int mode, const char* name)
     lua_setfield(pState, -2, name);
 }
 
-int luaopen_pycrypto_aes(lua_State *pState)
+LUA_EXPORT int luaopen_pycrypto_aes(lua_State *pState)
 {
-    luaL_Reg reg[] = {
-        {"new", create},
-        {NULL, NULL}
-    };
-
-
-    luaL_Reg regMeta[] = {
-        {"encrypt", encrypt},
-        {"decrypt", decrypt},
-        {NULL, NULL}
-    };
-
     lua_newtable(pState);
     lua_pushlightuserdata(pState, &pycrypto_aes_key);
     lua_pushvalue(pState, -2);
@@ -367,12 +361,15 @@ int luaopen_pycrypto_aes(lua_State *pState)
 
     lua_pushvalue(pState, -1);
     lua_setfield(pState, -2, "__index");
-    luaL_register(pState, NULL, regMeta);
 
-    luaL_register(pState, "pycrypto_aes", reg);
+    lua_pushcfunction(pState, create);
+    lua_setfield(pState, -2, "new");
 
-    lua_pushliteral(pState, VERSION);
-    lua_setfield(pState, -2, "version");
+    lua_pushcfunction(pState, encrypt);
+    lua_setfield(pState, -2, "encrypt");
+
+    lua_pushcfunction(pState, decrypt);
+    lua_setfield(pState, -2, "decrypt");
 
     registerMode(pState, MODE_ECB, "MODE_ECB");
     registerMode(pState, MODE_CBC, "MODE_CBC");
